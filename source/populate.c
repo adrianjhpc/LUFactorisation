@@ -46,6 +46,9 @@ int main(int argc, char *argv[])
    /* Intializes random number generator */
    srand((unsigned) time(&t));
 
+   /* Print the header for the matrix (i.e. the number of rows, columns, and total elements) */
+   printf("%d %d %d\n",n,n,n*n);
+
    /* Print 5 random numbers from 0 to 50 */
    for( i = 1 ; i <= n ; i++ ) 
    for( j = 1 ; j <= n ; j++ )
