@@ -12,31 +12,30 @@
 #include <stdlib.h>
 
 #define ROW_LENGTH 1024
-#define NICS_OK 0
 /*
- * ReadHeader3 function
+ * process_header function
  * This function reads the header of a matrix exchange (.mtx) format file.
  */
-static int ReadHeader3(FILE *f, int *m, int *n, int *nnz)
+static int process_header(FILE *f, int *m, int *n, int *mxn)
 {
 	char line[ROW_LENGTH];
 	int read;
 	line[0] = 0;
-	*m = *n = *nnz = 0;
+	*m = *n = *mxn = 0;
 
 	do 
 	{
 		if (fgets(line, ROW_LENGTH-1, f) == NULL) return 1;
-	} while (line[0] == '%'); 	// Skipping lines until we pass the header comments
-	// Reading the header
+	} while (line[0] == '%'); // Skipping lines until we pass the header comments
+	// read the header
 #ifdef INT64__
 #ifdef _WIN32
-	if (sscanf(line, "%I64u %I64u %I64u", m, n, nnz) == 3)
+	if (sscanf(line, "%I64u %I64u %I64u", m, n, mxn) == 3)
 #else
-	if (sscanf(line, "%llu %llu %llu", m, n, nnz) == 3)
+	if (sscanf(line, "%llu %llu %llu", m, n, mxn) == 3)
 #endif
 #else
-	if (sscanf(line, "%u %u %u", m, n, nnz) == 3)
+	if (sscanf(line, "%u %u %u", m, n, mxn) == 3)
 #endif
 	{
 		return 0;
@@ -47,12 +46,12 @@ static int ReadHeader3(FILE *f, int *m, int *n, int *nnz)
 		{ 
 #ifdef INT64__
 #ifdef _WIN32
-			read = fscanf(f, "%I64u %I64u %I64u", m, n, nnz);
+			read = fscanf(f, "%I64u %I64u %I64u", m, n, mxn);
 #else
-			read = fscanf(f, "%llu %llu %llu", m, n, nnz);
+			read = fscanf(f, "%llu %llu %llu", m, n, mxn);
 #endif
 #else
-			read = fscanf(f, "%u %u %u", m, n, nnz);
+			read = fscanf(f, "%u %u %u", m, n, mxn);
 #endif
 			if (read == EOF) return 1;
 		} while (read != 3);
@@ -66,7 +65,7 @@ static int ReadHeader3(FILE *f, int *m, int *n, int *nnz)
  * This function reads the body of a matrix exchange (.mtx) format file.
  */
 int read_arr(char* file, double **arr){
-	int m, n, nnz, k;
+	int m, n, mxn, k;
 	unsigned int i, j;
 	double temp;
 
@@ -76,11 +75,11 @@ int read_arr(char* file, double **arr){
 	fp = fopen(file, "r");
 	
 	//Read the header
-	ReadHeader3(fp, &m, &n, &nnz);
+	process_header(fp, &m, &n, &mxn);
 	*arr=calloc(m*n, sizeof(double));	//allocate the memory based on the header
 
 	// Reading code line by line to populate the matrix
-	for (k=0; k<nnz; ++k)
+	for (k=0; k<mxn; ++k)
 	{
 		fscanf(fp, "%u %u %lf", &i, &j, &temp);
 		
