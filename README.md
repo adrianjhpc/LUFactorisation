@@ -16,15 +16,19 @@ make <option>
 
 The following options are available:
 * `all` - compiles the targets below
+
 **    `cilk` - compiles an executable with Cilk array notation
 **       `simd` - compiles an executable with simd OpenMP pragmas
 **       `ivdep` - compiles ane executable with ivdep pragmas
 **       `mkl`  - compiles a version of the benchmark that uses MKL to do the LU factorisation rather than an of our computational kernels.  This requires either MKL to be installed on the system you are compiling on, or another implementation of LAPACK.
+
 * `kncoffload` - compiles the same implementations as above, but with Intel LEO offloading functionality to use the Xeon Phi KNC as an offload device.  As this requires the KNC software enviroment (MPSS) to be installed this is not done by default
+
 **    `knccilk`
 **       `kncsimd` 
 **       `kncivdep` 
 **       `kncmkl`
+
 *       `populate` - creates an executable that will generate a dense matrix for benchmarking
 *       `clean` - cleans the directory of executables and `.o` files
 
